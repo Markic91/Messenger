@@ -23,11 +23,15 @@ public class Main {
                     username=args[i+1];
                 }
             }
+            if (host == null){
+                System.err.println("Veuillez specifier une adresse IP ou un nom de serveur");
+            }
 
             //On crée un objet client avec les valeurs qu'on vient d'analyser
             Client client = new Client(host, port, username);
 
-            System.out.println(client);
+            System.out.println(client.getUsername());
+            System.out.println(client.getHost());
 
             //lancer le mode client
 
