@@ -3,7 +3,7 @@ import server.Server;
 public class Main {
     public static void main(String[] args) {
 
-        if (args.length<1){
+        if (args.length<1 || (!args[0].equals("-c") && !args[0].equals("-l"))){
             System.err.println("Veuillez spécifier le mode client (-c) ou le mode serveur (-l)");
             return;
         }
@@ -32,12 +32,12 @@ public class Main {
 
             System.out.println(client.getUsername());
             System.out.println(client.getHost());
-
+            System.out.println(client.getPort());
             //lancer le mode client
 
         } else if (args[0].equals("-l")) {
             //Alors, on bascule sur le mode server
-            String address = "0,0,0,0";
+            String address = "0.0.0.0";
             int port = 19337;
             String banner = null;
 
@@ -53,7 +53,9 @@ public class Main {
 
             //On crée un objet server avec les valeurs qu'on vient d'analyser
             Server server = new Server(address, port,banner);
-
+            System.out.println(server.getAddress());
+            System.out.println(server.getPort());
+            System.out.println(server.getBanner());
             //lancer le mode server
         }
     }
