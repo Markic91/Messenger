@@ -28,7 +28,7 @@ public final class Client {
 
         this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
         this.out = new PrintWriter(this.clientSocket.getOutputStream());
-        Thread envoyer = new Thread(new Runnable() {
+        Thread server = new Thread(new Runnable() {
             String msg;
             @Override
             public void run() {
@@ -39,28 +39,7 @@ public final class Client {
                 }
             }
         });
-        envoyer.start();
-
-        Thread recevoir = new Thread(new Runnable() {
-            String msg;
-            @Override
-            public void run() {
-                try {
-                    msg = in.readLine();
-                    while(msg!=null){
-                        System.out.println("Serveur : "+msg);
-                        msg = in.readLine();
-                    }
-                    System.out.println("Serveur déconecté");
-                    out.close();
-                    clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        recevoir.start();
-
+        server.start();
 }
 
     public String getUsername() {

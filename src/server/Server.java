@@ -36,7 +36,7 @@ public final class Server {
         this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
 
 
-    Thread envoi= new Thread(new Runnable() {
+    Thread reception = new Thread(new Runnable() {
         String msg;
         @Override
         public void run() {
@@ -47,8 +47,8 @@ public final class Server {
             }
         }
     });
-    envoi.start();
-    Thread recevoir= new Thread(new Runnable() {
+    reception.start();
+    Thread display= new Thread(new Runnable() {
         String msg ;
         @Override
         public void run() {
@@ -70,7 +70,7 @@ public final class Server {
             }
         }
     });
-    recevoir.start();
+    display.start();
 }
     public String getAddress() {
         return address;
