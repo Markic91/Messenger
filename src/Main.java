@@ -38,6 +38,7 @@ public class Main {
             System.out.println(client.getPort());
             //lancer le mode client
             client.connect();
+            client.dialog();
 
         } else if (args[0].equals("-l")) {
             //Alors, on bascule sur le mode server
@@ -62,6 +63,8 @@ public class Main {
             System.out.println(server.getBanner());
             //lancer le mode server
             server.listen();
+            server.dialog();
+
         }
     }
 }

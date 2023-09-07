@@ -26,12 +26,14 @@ public final class Server {
         this.port = port;
         this.banner = banner;
     }
-public void listen() throws IOException {
+    public void listen() throws IOException {
         this.serveurSocket = new ServerSocket(port);
         this.clientSocket = serveurSocket.accept();
+    }
+
+    public void dialog() throws IOException {
         this.out = new PrintWriter(this.clientSocket.getOutputStream());
         this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-
 
 
     Thread envoi= new Thread(new Runnable() {
