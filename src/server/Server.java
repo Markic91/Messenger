@@ -23,7 +23,7 @@ public final class Server {
 
 
 
-    final Scanner sc = new Scanner(System.in);
+//    final Scanner sc = new Scanner(System.in);
 
     public Server(String address, int port, String banner) {
         this.address = address;

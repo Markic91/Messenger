@@ -2,7 +2,6 @@ import client.Client;
 import server.Server;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -36,6 +35,8 @@ public class Main {
 
             //lancer le mode client
             client.connect();
+            client.receive();
+            client.write();
         } else if (args[0].equals("-l")) {
             //Alors, on bascule sur le mode server
             String address = "0.0.0.0";
@@ -56,7 +57,6 @@ public class Main {
             Server server = new Server(address, port, banner);
             //lancer le mode server
             server.listen();
-
 
         }
     }
