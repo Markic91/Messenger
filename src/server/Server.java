@@ -1,6 +1,5 @@
 package server;
 
-import client.Client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,82 +8,82 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public final class Server {
-
-    private final InetAddress address;
+    private static List<ClientHandler> clients = new ArrayList<>();
+    private final String address;
     private final int backlog;
     private final int port;
 
     private final String banner;
-    private ServerSocket serveurSocket ;
-    private Socket clientSocket ;
-    private BufferedReader in;
-    private PrintWriter exit;
-    final Scanner sc=new Scanner(System.in);
+    private ServerSocket serverSocket;
 
-    public Server(InetAddress address, int port, String banner) {
+
+
+    final Scanner sc = new Scanner(System.in);
+
+    public Server(String address, int port, String banner) {
         this.address = address;
-        this.backlog = 3;
+        this.backlog = 10;
         this.port = port;
         this.banner = banner;
     }
+
     public void listen() throws IOException {
-        this.serveurSocket = new ServerSocket(port, backlog);
-        this.clientSocket = serveurSocket.accept();
+        this.serverSocket = new ServerSocket(this.port, this.backlog, InetAddress.getByName(this.address));
+        System.out.println("Le serveur écoute sur " + this.address + ":" + this.port);
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Nouveau Client connecté: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
+            ClientHandler clientHandler = new ClientHandler(clientSocket, this.banner);
+            clients.add(clientHandler);
+            clientHandler.start();
+        }
+
     }
 
-    public void dialog() throws IOException {
-        this.exit = new PrintWriter(this.clientSocket.getOutputStream());
-        this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+    private static class ClientHandler extends Thread {
+        private Socket clientSocket;
+        private PrintWriter out;
+        private String banner;
 
-
-    Thread reception = new Thread(new Runnable() {
-        String msg;
-//        @Override
-        public void run() {
-            while(true){
-                msg = sc.nextLine();
-                exit.println(msg);
-                exit.flush();
-            }
+        public ClientHandler(Socket socket, String banner) {
+            this.clientSocket = socket;
+            this.banner = banner;
         }
-    });
-    reception.start();
-    Thread display= new Thread(new Runnable() {
-        String msg ;
-//        @Override
+
         public void run() {
-            try {
-                msg = in.readLine();
-                //tant que le client est connecté
-                while(msg!=null){
-                    System.out.println("Client : "+msg );
-                    msg = in.readLine();
+            try (
+                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+            ) {
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                out.println(banner);
+
+                String message;
+                while ((message = in.readLine()) != null) {
+                    System.out.println(message);
+                    broadcastMessage(message);
                 }
-                //sortir de la boucle si le client a déconnecté
-                System.out.println("Client déconnecté");
-                //fermer le flux et la session socket
-                exit.close();
-                clientSocket.close();
-                serveurSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                    clients.remove(this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    });
-    display.start();
-}
-    public InetAddress getAddress() {
-        return address;
-    }
 
-    public int getPort() {
-        return port;
-    }
-
-    public String getBanner() {
-        return banner;
+        private void broadcastMessage(String message) {
+            for (ClientHandler client : clients) {
+                client.out.println(message);
+            }
+        }
     }
 }
