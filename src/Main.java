@@ -1,8 +1,6 @@
 import client.Client;
 import server.Server;
-
 import java.io.IOException;
-
 public class Main {
     public static void main(String[] args) throws IOException {
 
@@ -45,7 +43,7 @@ public class Main {
 
             for(int i=1; i<args.length-1; i++){
                 if (args[i].equals("-a")){
-                    address=(args[i+1]);
+                    address= (args[i+1]);
                 } else if (args[i].equals("-p")) {
                     port=Integer.parseInt(args[i+1]);
                 } else if (args[i].equals("-b")) {
@@ -57,7 +55,6 @@ public class Main {
             Server server = new Server(address, port, banner);
             //lancer le mode server
             server.listen();
-
         }
     }
 }
